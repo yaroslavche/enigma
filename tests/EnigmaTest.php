@@ -80,14 +80,15 @@ class EnigmaTest extends TestCase
             'decoded' => 'OLPFHNVFLYN',
         ];
 
+        # maybe wrong
         yield [
             'rotors' => [$I, $II, $III],
             'rings' => [0, 0, 0],
-            'reflector' => $B,
+            'reflector' => $A,
             'plugboard' => [],
             'start' => ['A', 'B', 'C'],
             'encoded' => 'TESTMESSAGE',
-            'decoded' => 'POYOUXPJIXN',
+            'decoded' => 'TESTMESSAGE',
         ];
 
 //        yield [
@@ -122,5 +123,48 @@ class EnigmaTest extends TestCase
 //            'encoded' => 'DREIGEHTLANGSAMABERSIQERVORWAERTSXEINSSIEBENNULLSEQSXUHRXROEMXEINSXINFRGTXDREIXAUFFLIEGERSTRASZEMITANFANGXEINSSEQSXKMXKMXOSTWXKAMENECXK',
 //            'decoded' => 'SFBWDNJUSEGQOBHKRTAREEZMWKPPRBXOHDROEQGBBGTQVPGVKBVVGBIMHUSZYDAJQIROAXSSSNREHYGGRPISEZBOVMQIEMMZCYSGQDGRERVBILEKXYQIRGIRQNRDNVRXCYYTNJR',
 //        ];
+    }
+
+    public function testInvalidTranslate()
+    {
+        $this->expectExceptionMessage('Translate must contains same char count');
+        new Enigma('ABC', '1234');
+    }
+
+    public function testRotorPosition()
+    {
+        $enigma = new Enigma('ABC');
+        $this->expectExceptionMessage('Invalid rotor position -1');
+        $enigma->setRotor(new I(), 0, -1);
+    }
+
+    public function testGetCharIndexInvalidChar()
+    {
+        $enigma = new Enigma('ABC');
+        $this->expectExceptionMessage('"AB" is not valid char.');
+        $enigma->getCharIndex('AB');
+    }
+
+    public function testGetCharIndexNotFoundChar()
+    {
+        $enigma = new Enigma('ABC');
+        $this->expectExceptionMessage('Unknown char " " for alphabet.');
+        $enigma->getCharIndex(' ');
+    }
+
+    public function testSetPlugPairFirst()
+    {
+        $enigma = new Enigma('ABC');
+        $enigma->setPlugPair('A', 'B');
+        $this->expectExceptionMessage('Plugboard component "A" already in use.');
+        $enigma->setPlugPair('A', 'C');
+    }
+
+    public function testSetPlugPairSecond()
+    {
+        $enigma = new Enigma('ABC');
+        $enigma->setPlugPair('A', 'B');
+        $this->expectExceptionMessage('Plugboard component "B" already in use.');
+        $enigma->setPlugPair('C', 'B');
     }
 }

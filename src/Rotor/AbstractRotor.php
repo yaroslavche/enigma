@@ -36,12 +36,13 @@ class AbstractRotor implements RotorInterface
     public function map(int $position, bool $reverse = false): int
     {
         $map = $reverse ? array_flip($this->map) : $this->map;
-        $mapPosition = ($position + $this->currentPosition) % count($this->map);
+        $itemsCount = count($map);
+        $mapPosition = ($position + $this->currentPosition) % $itemsCount;
         $offset = $mapPosition - $position;
         $index = $map[$mapPosition] - $offset;
         if ($offset !== 0) {
-            $index = count($map) + $index;
-            $index %= count($map);
+            $index = $itemsCount + $index;
+            $index %= $itemsCount;
         }
         return $index;
     }

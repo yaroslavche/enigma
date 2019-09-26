@@ -13,11 +13,11 @@ class Enigma
     /** @var string $translate */
     private $translate;
     /** @var array<int, RotorInterface> $rotors */
-    private $rotors;
+    private $rotors = [];
     /** @var ReflectorInterface $reflector */
     private $reflector;
     /** @var array<int, int> $plugboard */
-    private $plugboard;
+    private $plugboard = [];
 
     public function __construct(string $alphabet, ?string $translate = null)
     {
@@ -93,7 +93,9 @@ class Enigma
         }
 
         # reflector
-        $charIndex = $this->reflector->map($charIndex);
+        if ($this->reflector instanceof ReflectorInterface) {
+            $charIndex = $this->reflector->map($charIndex);
+        }
 
         # rotors backward
         foreach (array_reverse($this->rotors) as $rotor) {
@@ -120,7 +122,6 @@ class Enigma
 
     public function setPlugPair(string $firstComponent, string $secondComponent): void
     {
-        $this->plugboard = $this->plugboard ?? [];
         $firstCharIndex = $this->getCharIndex($firstComponent);
         if (array_key_exists($firstCharIndex, $this->plugboard)) {
             throw new Exception(sprintf('Plugboard component "%s" already in use.', $firstComponent));
