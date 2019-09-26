@@ -25,7 +25,7 @@ class AbstractRotor implements RotorInterface
 
     public function rotate(): void
     {
-        $this->currentPosition = ($this->currentPosition + $this->ringPosition + 1) % count($this->map);
+        $this->currentPosition = ($this->currentPosition + 1) % count($this->map);
     }
 
     public function isInTurnoverPosition(): bool
@@ -36,7 +36,7 @@ class AbstractRotor implements RotorInterface
     public function map(int $position, bool $reverse = false): int
     {
         $map = $reverse ? array_flip($this->map) : $this->map;
-        $mapPosition = ($position + $this->currentPosition + $this->ringPosition) % count($this->map);
+        $mapPosition = ($position + $this->currentPosition) % count($this->map);
         $offset = $mapPosition - $position;
         $index = $map[$mapPosition] - $offset;
         if ($offset !== 0) {
