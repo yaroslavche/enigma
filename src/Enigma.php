@@ -93,7 +93,7 @@ class Enigma
         }
 
         # reflector
-        if ($this->reflector instanceof ReflectorInterface) {
+        if (null !== $this->reflector) {
             $charIndex = $this->reflector->map($charIndex);
         }
 
