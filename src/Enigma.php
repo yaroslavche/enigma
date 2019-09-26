@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Yaroslavche\Enigma;
 
@@ -6,6 +7,10 @@ use Exception;
 use Yaroslavche\Enigma\Reflector\ReflectorInterface;
 use Yaroslavche\Enigma\Rotor\RotorInterface;
 
+/**
+ * Class Enigma
+ * @package Yaroslavche\Enigma
+ */
 class Enigma
 {
     /** @var string $alphabet */
@@ -19,6 +24,12 @@ class Enigma
     /** @var array<int, int> $plugboard */
     private $plugboard = [];
 
+    /**
+     * Enigma constructor.
+     * @param string $alphabet
+     * @param string|null $translate
+     * @throws Exception
+     */
     public function __construct(string $alphabet, ?string $translate = null)
     {
         $this->alphabet = $alphabet;
@@ -45,11 +56,19 @@ class Enigma
         ksort($this->rotors);
     }
 
+    /**
+     * @param ReflectorInterface $reflector
+     */
     public function setReflector(ReflectorInterface $reflector): void
     {
         $this->reflector = $reflector;
     }
 
+    /**
+     * @param string $char
+     * @return string
+     * @throws Exception
+     */
     public function cryptChar(string $char): string
     {
         $this->rotate();
@@ -59,6 +78,11 @@ class Enigma
     }
 
 
+    /**
+     * @param string $message
+     * @return string
+     * @throws Exception
+     */
     public function cryptMessage(string $message): string
     {
         $cipher = '';
@@ -81,6 +105,10 @@ class Enigma
         }
     }
 
+    /**
+     * @param int $charIndex
+     * @return int
+     */
     private function makePath(int $charIndex): int
     {
         # plugboard
@@ -108,6 +136,11 @@ class Enigma
         return $charIndex;
     }
 
+    /**
+     * @param string $char
+     * @return int
+     * @throws Exception
+     */
     public function getCharIndex(string $char): int
     {
         if (mb_strlen($char) !== 1) {
@@ -120,6 +153,11 @@ class Enigma
         return $charIndex;
     }
 
+    /**
+     * @param string $firstComponent
+     * @param string $secondComponent
+     * @throws Exception
+     */
     public function setPlugPair(string $firstComponent, string $secondComponent): void
     {
         $firstCharIndex = $this->getCharIndex($firstComponent);
@@ -134,6 +172,10 @@ class Enigma
         $this->plugboard[$secondCharIndex] = $firstCharIndex;
     }
 
+    /**
+     * @param string $key
+     * @throws Exception
+     */
     public function setKey(string $key): void
     {
         foreach (array_reverse(mb_str_split($key)) as $index => $char) {

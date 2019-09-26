@@ -1,7 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Yaroslavche\Enigma\Rotor;
 
+/**
+ * Class V
+ * @package Yaroslavche\Enigma\Rotor
+ */
 class V extends AbstractRotor
 {
     /**
