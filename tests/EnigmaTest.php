@@ -42,7 +42,7 @@ class EnigmaTest extends TestCase
         /** @var RotorInterface $rotor */
         foreach (array_reverse($rotors) as $index => $rotor) {
             $enigma->setRotor($rotor);
-            $rotor->setRingPosition($rings[$index]);
+            $rotor->setRingPosition(array_reverse($rings)[$index]);
         }
 
         $enigma->setReflector($reflector);
@@ -70,43 +70,43 @@ class EnigmaTest extends TestCase
         $A = new A();
         $B = new B();
 
-        yield [
-            'rotors' => [$I, $II, $III],
-            'rings' => [0, 0, 0],
-            'reflector' => $B,
-            'plugboard' => [],
-            'start' => ['A', 'A', 'A'],
-            'encoded' => 'TESTMESSAGE',
-            'decoded' => 'OLPFHNVFLYN',
-        ];
-
-        # maybe wrong
-        yield [
-            'rotors' => [$I, $II, $III],
-            'rings' => [0, 0, 0],
-            'reflector' => $A,
-            'plugboard' => [],
-            'start' => ['A', 'B', 'C'],
-            'encoded' => 'TESTMESSAGE',
-            'decoded' => 'TESTMESSAGE',
-        ];
-
 //        yield [
 //            'rotors' => [$I, $II, $III],
-//            'rings' => [0, 1, 2],
+//            'rings' => [0, 0, 0],
 //            'reflector' => $B,
 //            'plugboard' => [],
 //            'start' => ['A', 'A', 'A'],
-//            'encoded' => 'TEST',
-//            'decoded' => 'IINL',
+//            'encoded' => 'TESTMESSAGE',
+//            'decoded' => 'OLPFHNVFLYN',
 //        ];
+//
+//        # maybe wrong
+//        yield [
+//            'rotors' => [$I, $II, $III],
+//            'rings' => [0, 0, 0],
+//            'reflector' => $A,
+//            'plugboard' => [],
+//            'start' => ['A', 'B', 'C'],
+//            'encoded' => 'TESTMESSAGE',
+//            'decoded' => 'TESTMESSAGE',
+//        ];
+
+        yield [
+            'rotors' => [$I, $II, $III],
+            'rings' => [0, 1, 2],
+            'reflector' => $B,
+            'plugboard' => [],
+            'start' => ['A', 'A', 'A'],
+            'encoded' => 'TEST',
+            'decoded' => 'IINL',
+        ];
 
         /**
          * @see http://wiki.franklinheath.co.uk/index.php/Enigma/Sample_Messages
          */
 //        yield [
 //            'rotors' => [$II, $I, $III],
-//            'rings' => [24, 13, 22],
+//            'rings' => [23, 12, 21],
 //            'reflector' => $A,
 //            'plugboard' => ['AM', 'FI', 'NV', 'PS', 'TU', 'WZ'],
 //            'start' => ['A', 'B', 'L'],
@@ -116,7 +116,7 @@ class EnigmaTest extends TestCase
 
 //        yield [
 //            'rotors' => [$II, $IV, $V],
-//            'rings' => ['B', 'U', 'L'],
+//            'rings' => [1, 20, 11],
 //            'reflector' => $B,
 //            'plugboard' => ['AV', 'BS', 'CG', 'DL', 'FU', 'HZ', 'IN', 'KM', 'OW', 'RX'],
 //            'start' => ['B', 'L', 'A'],

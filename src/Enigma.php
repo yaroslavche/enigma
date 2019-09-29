@@ -127,7 +127,7 @@ class Enigma
 
         # rotors backward
         foreach (array_reverse($this->rotors) as $rotor) {
-            $charIndex = $rotor->map($charIndex, true);
+            $charIndex = $rotor->mapReverse($charIndex);
         }
 
         # plugboard

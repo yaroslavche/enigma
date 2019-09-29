@@ -31,10 +31,15 @@ interface RotorInterface
 
     /**
      * @param int $position
-     * @param bool $reverse
      * @return int
      */
-    public function map(int $position, bool $reverse = false): int;
+    public function map(int $position): int;
+
+    /**
+     * @param int $position
+     * @return int
+     */
+    public function mapReverse(int $position): int;
 
     /**
      * @return int
