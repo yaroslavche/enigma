@@ -17,12 +17,10 @@ class AbstractRotor implements RotorInterface
     protected $mapLength = 0;
     /** @var array<int, int> $turnover */
     protected $turnover = [];
-    /** @var int $ringPosition */
-    private $ringPosition = 0;
+    /** @var int $ringIndex */
+    private $ringIndex = 0;
     /** @var int $currentPosition */
-    private $currentPosition = 0;
-    /** @var int $rotations */
-    private $rotations = 0;
+    private $currentIndex = 0;
 
     /**
      * AbstractRotor constructor.
@@ -45,6 +43,8 @@ class AbstractRotor implements RotorInterface
      */
     public function setRingPosition(int $position): void
     {
+        # "remove" existing ring offset and add the new one
+        $this->currentIndex = $this->currentIndex - $this->ringIndex + $position;
         $this->ringPosition = $position;
     }
 
@@ -53,7 +53,7 @@ class AbstractRotor implements RotorInterface
      */
     public function setStartPosition(int $position): void
     {
-        $this->currentPosition = $position;
+        $this->currentIndex = $position + $this->ringIndex;
     }
 
     /**
@@ -61,8 +61,7 @@ class AbstractRotor implements RotorInterface
      */
     public function rotate(): void
     {
-        $this->currentPosition = ($this->currentPosition + 1) % count($this->map);
-        $this->rotations++;
+        $this->currentIndex = ($this->currentIndex + 1) % count($this->map);
     }
 
     /**
@@ -70,76 +69,69 @@ class AbstractRotor implements RotorInterface
      */
     public function isInTurnoverPosition(): bool
     {
-        return in_array($this->currentPosition, $this->turnover, true);
+        return in_array($this->currentIndex, $this->turnover, true);
     }
 
     /**
      * @inheritDoc
      */
-    public function map(int $position): int
+    public function map(int $inputIndex): int
     {
-        $map = $this->map;
-        $mapPosition = ($position + $this->currentPosition) % $this->mapLength;
-        $rotated = $position !== $mapPosition;
-        if (!$rotated) {
-            $mapPosition -= $this->ringPosition;
+        $inputIndexTmp = $inputIndex;
+        $inputIndex += $this->currentIndex;
+        $inputIndex %= $this->mapLength;
+        $outputIndex = $this->map[$inputIndex] - $this->currentIndex + $this->ringIndex;
+        if ($outputIndex < 0) {
+            $outputIndex = $this->mapLength - $outputIndex;
         }
-        if ($mapPosition < 0) {
-            $mapPosition = ($this->mapLength - $mapPosition) % $this->mapLength;
-        }
-        $index = $map[$mapPosition] - $this->ringPosition - (!$rotated ? $this->ringPosition : 0);
-        if ($index < 0) {
-            $index = $this->mapLength - $index;
-        }
-        $index %= $this->mapLength;
+        $outputIndex %= $this->mapLength;
 //        $dbg = PHP_EOL .
 //            sprintf(
-//                'ROTOR %s%s %s -> %s -> %s',
+//                'ROTOR %s (current %s) %s -> %s (%d) -> %s',
 //                static::class,
-//                $rotated ? ' (rotated)' : '',
-//                chr($position + 65),
-//                chr($mapPosition + 65),
-//                chr($index + 65)
+//                $this->currentIndex,
+//                chr($inputIndexTmp + 65),
+//                chr($inputIndex + 65),
+//                $inputIndex,
+//                chr($outputIndex + 65)
 //            );
 //        echo $dbg;
-        return $index;
+        return $outputIndex;
     }
 
     /**
      * @inheritDoc
      */
-    public function mapReverse(int $position): int
+    public function mapReverse(int $inputIndex): int
     {
-        $map = array_flip($this->map);
-        $mapPosition = ($position + $this->currentPosition) % $this->mapLength;
-        $rotated = $position !== $mapPosition;
-        $index = $map[$mapPosition];
-        if ($index < 0) {
-            $index = $this->mapLength - $index;
+        $inputIndex += $this->currentIndex;
+        $inputIndex %= $this->mapLength;
+        $outputIndex = array_search($inputIndex, $this->map) - $this->currentIndex - $this->ringIndex;
+        if ($outputIndex < 0) {
+            $outputIndex = $this->mapLength - $outputIndex;
         }
-        $index %= $this->mapLength;
+        $outputIndex %= $this->mapLength;
 //        $dbg = PHP_EOL .
 //            sprintf(
-//                'REVERSE ROTOR %s%s %s -> %s -> %s (p %s c %s r %s m %s)',
+//                'REVERSE ROTOR %s%s (current %s) %s (%d) -> %s %s',
 //                static::class,
 //                $rotated ? ' (rotated)' : '',
-//                chr($position + 65),
-//                chr($mapPosition + 65),
-//                chr($index + 65),
-//                $position,
-//                $this->currentPosition,
-//                $this->ringPosition,
-//                $mapPosition
+//                $this->currentIndex,
+//                chr($inputIndex + 65),
+//                $inputIndex,
+//                chr($outputIndex + 65),
+//                sprintf('%d %d', $inputIndex, $inputIndex - $this->currentIndex)
 //            );
 //        echo $dbg;
-        return $index;
+        return $outputIndex;
     }
 
     /**
+     * @todo rename to getCurrentIndex
      * @inheritDoc
      */
     public function getCurrentPosition(): int
     {
-        return $this->currentPosition;
+        return $this->currentIndex;
     }
 }

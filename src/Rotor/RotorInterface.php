@@ -30,16 +30,16 @@ interface RotorInterface
     public function isInTurnoverPosition(): bool;
 
     /**
-     * @param int $position
+     * @param int $inputIndex
      * @return int
      */
-    public function map(int $position): int;
+    public function map(int $inputIndex): int;
 
     /**
-     * @param int $position
+     * @param int $inputIndex
      * @return int
      */
-    public function mapReverse(int $position): int;
+    public function mapReverse(int $inputIndex): int;
 
     /**
      * @return int

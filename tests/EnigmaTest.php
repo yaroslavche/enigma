@@ -70,15 +70,15 @@ class EnigmaTest extends TestCase
         $A = new A();
         $B = new B();
 
-//        yield [
-//            'rotors' => [$I, $II, $III],
-//            'rings' => [0, 0, 0],
-//            'reflector' => $B,
-//            'plugboard' => [],
-//            'start' => ['A', 'A', 'A'],
-//            'encoded' => 'TESTMESSAGE',
-//            'decoded' => 'OLPFHNVFLYN',
-//        ];
+        yield [
+            'rotors' => [$I, $II, $III],
+            'rings' => [0, 0, 0],
+            'reflector' => $B,
+            'plugboard' => [],
+            'start' => ['A', 'A', 'A'],
+            'encoded' => 'TESTMESSAGE',
+            'decoded' => 'OLPFHNVFLYN',
+        ];
 //
 //        # maybe wrong
 //        yield [
