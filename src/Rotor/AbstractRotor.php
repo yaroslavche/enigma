@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Yaroslavche\Enigma\Rotor;
 
 use Exception;
+use Yaroslavche\Enigma\Enigma;
 
 /**
  * Class AbstractRotor
@@ -11,6 +12,10 @@ use Exception;
  */
 class AbstractRotor implements RotorInterface
 {
+    /** @var Enigma $enigma */
+    private $enigma;
+    /** @var int|null $slot */
+    private $slot;
     /** @var array<int, int> $map */
     protected $map = [];
     /** @var int $mapLength */
@@ -39,21 +44,35 @@ class AbstractRotor implements RotorInterface
     }
 
     /**
-     * @inheritDoc
+     * @param Enigma $enigma
+     * @param int $slot
+     * @param int|null $ringIndex
+     * @param int|null $startIndex
      */
-    public function setRingPosition(int $position): void
+    public function set(Enigma $enigma, int $slot, ?int $ringIndex = null, ?int $startIndex = null): void
     {
-        # "remove" existing ring offset and add the new one
-        $this->currentIndex = $this->currentIndex - $this->ringIndex + $position;
-        $this->ringPosition = $position;
+        $this->enigma = $enigma;
+        $this->slot = $slot;
+        $this->setRingIndex($ringIndex);
+        $this->setStartIndex($startIndex ?? 0);
     }
 
     /**
-     * @inheritDoc
+     * @param int $index
      */
-    public function setStartPosition(int $position): void
+    public function setRingIndex(int $index): void
     {
-        $this->currentIndex = $position + $this->ringIndex;
+        # "remove" existing ring index and add the new one
+        $this->currentIndex = $this->currentIndex - $this->ringIndex + $index;
+        $this->ringIndex = $index;
+    }
+
+    /**
+     * @param int $index
+     */
+    public function setStartIndex(int $index): void
+    {
+        $this->currentIndex = $index + $this->ringIndex;
     }
 
     /**
@@ -61,7 +80,17 @@ class AbstractRotor implements RotorInterface
      */
     public function rotate(): void
     {
-        $this->currentIndex = ($this->currentIndex + 1) % count($this->map);
+        $this->currentIndex = ($this->currentIndex + 1) % $this->mapLength;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRotated(): bool
+    {
+        /** @var RotorState $rotorState */
+        $rotorState = $this->enigma->getRotorState($this->slot);
+        return $rotorState->isRotated();
     }
 
     /**
@@ -75,25 +104,40 @@ class AbstractRotor implements RotorInterface
     /**
      * @inheritDoc
      */
-    public function map(int $inputIndex): int
+    public function wire(int $inputIndex): int
     {
         $inputIndexTmp = $inputIndex;
-        $inputIndex += $this->currentIndex;
+        $inputIndex += $this->currentIndex - $this->ringIndex;
+        /** @var RotorState $rotorState */
+        $rotorState = $this->enigma->getRotorState($this->slot);
+        $rotated = $rotorState->isRotated();
+        if ($this->slot > 0) {
+            /** @var RotorState $previousRotorState */
+            $previousRotorState = $this->enigma->getRotorState($this->slot - 1);
+            if ($previousRotorState->isRotated()) {
+//                $inputIndex--;
+            }
+        }
+        if ($inputIndex < 0) {
+            $inputIndex = $this->mapLength - $inputIndex;
+        }
         $inputIndex %= $this->mapLength;
-        $outputIndex = $this->map[$inputIndex] - $this->currentIndex + $this->ringIndex;
+        $outputIndex = $this->map[$inputIndex] - $this->currentIndex;
         if ($outputIndex < 0) {
             $outputIndex = $this->mapLength - $outputIndex;
         }
         $outputIndex %= $this->mapLength;
 //        $dbg = PHP_EOL .
 //            sprintf(
-//                'ROTOR %s (current %s) %s -> %s (%d) -> %s',
+//                'ROTOR %s%s (current %s) %s -> %s (%d) -> %s (%d)',
 //                static::class,
+//                $rotated ? '+' : '-',
 //                $this->currentIndex,
 //                chr($inputIndexTmp + 65),
 //                chr($inputIndex + 65),
 //                $inputIndex,
-//                chr($outputIndex + 65)
+//                chr($outputIndex + 65),
+//                $outputIndex
 //            );
 //        echo $dbg;
         return $outputIndex;
@@ -102,36 +146,33 @@ class AbstractRotor implements RotorInterface
     /**
      * @inheritDoc
      */
-    public function mapReverse(int $inputIndex): int
+    public function wireReverse(int $inputIndex): int
     {
+        $tmp = $inputIndex;
         $inputIndex += $this->currentIndex;
         $inputIndex %= $this->mapLength;
-        $outputIndex = array_search($inputIndex, $this->map) - $this->currentIndex - $this->ringIndex;
+        $outputIndex = array_search($inputIndex, $this->map);
+        /** @var RotorState $previousRotorState */
+        $rotorState = $this->enigma->getRotorState($this->slot);
         if ($outputIndex < 0) {
             $outputIndex = $this->mapLength - $outputIndex;
         }
         $outputIndex %= $this->mapLength;
+        if ($rotorState->isRotated()) {
+            $outputIndex -= $this->currentIndex;
+        }
 //        $dbg = PHP_EOL .
 //            sprintf(
-//                'REVERSE ROTOR %s%s (current %s) %s (%d) -> %s %s',
+//                'ROTOR %s%s (current %s) %s (%d) -> %s (%d)',
 //                static::class,
-//                $rotated ? ' (rotated)' : '',
+//                $rotorState->isRotated() ? '+' : '-',
 //                $this->currentIndex,
 //                chr($inputIndex + 65),
 //                $inputIndex,
 //                chr($outputIndex + 65),
-//                sprintf('%d %d', $inputIndex, $inputIndex - $this->currentIndex)
+//                $outputIndex
 //            );
 //        echo $dbg;
         return $outputIndex;
-    }
-
-    /**
-     * @todo rename to getCurrentIndex
-     * @inheritDoc
-     */
-    public function getCurrentPosition(): int
-    {
-        return $this->currentIndex;
     }
 }

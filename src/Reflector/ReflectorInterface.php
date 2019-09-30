@@ -13,5 +13,5 @@ interface ReflectorInterface
      * @param int $index
      * @return int
      */
-    public function map(int $index): int;
+    public function wire(int $index): int;
 }

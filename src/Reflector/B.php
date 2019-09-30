@@ -15,7 +15,7 @@ class B implements ReflectorInterface
     /**
      * @inheritDoc
      */
-    public function map(int $index): int
+    public function wire(int $index): int
     {
         return $this->map[$index] ?? $index;
     }

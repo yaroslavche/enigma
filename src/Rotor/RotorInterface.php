@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Yaroslavche\Enigma\Rotor;
 
+use Yaroslavche\Enigma\Enigma;
+
 /**
  * Interface RotorInterface
  * @package Yaroslavche\Enigma\Rotor
@@ -10,19 +12,20 @@ namespace Yaroslavche\Enigma\Rotor;
 interface RotorInterface
 {
     /**
-     * @param int $position
+     * @param Enigma $enigma
+     * @param int $slot
+     * @param int|null $ringIndex
+     * @param int|null $startIndex
      */
-    public function setRingPosition(int $position): void;
+    public function set(Enigma $enigma, int $slot, ?int $ringIndex = null, ?int $startIndex = null): void;
 
-    /**
-     * @param int $position
-     */
-    public function setStartPosition(int $position): void;
-
-    /**
-     *
-     */
+    /** */
     public function rotate(): void;
+
+    /**
+     * @return bool
+     */
+    public function isRotated(): bool;
 
     /**
      * @return bool
@@ -33,16 +36,16 @@ interface RotorInterface
      * @param int $inputIndex
      * @return int
      */
-    public function map(int $inputIndex): int;
+    public function wire(int $inputIndex): int;
 
     /**
      * @param int $inputIndex
      * @return int
      */
-    public function mapReverse(int $inputIndex): int;
+    public function wireReverse(int $inputIndex): int;
 
     /**
-     * @return int
+     * @param int $index
      */
-    public function getCurrentPosition(): int;
+    public function setStartIndex(int $index): void;
 }

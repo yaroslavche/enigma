@@ -41,8 +41,8 @@ class EnigmaTest extends TestCase
 
         /** @var RotorInterface $rotor */
         foreach (array_reverse($rotors) as $index => $rotor) {
-            $enigma->setRotor($rotor);
-            $rotor->setRingPosition(array_reverse($rings)[$index]);
+            $ringIndex = array_reverse($rings)[$index];
+            $enigma->setRotor($rotor, $index, $ringIndex);
         }
 
         $enigma->setReflector($reflector);
@@ -91,15 +91,15 @@ class EnigmaTest extends TestCase
 //            'decoded' => 'TESTMESSAGE',
 //        ];
 
-        yield [
-            'rotors' => [$I, $II, $III],
-            'rings' => [0, 1, 2],
-            'reflector' => $B,
-            'plugboard' => [],
-            'start' => ['A', 'A', 'A'],
-            'encoded' => 'TEST',
-            'decoded' => 'IINL',
-        ];
+//        yield [
+//            'rotors' => [$I, $II, $III],
+//            'rings' => [0, 2, 2],
+//            'reflector' => $B,
+//            'plugboard' => [],
+//            'start' => ['A', 'A', 'A'],
+//            'encoded' => 'TEST',
+//            'decoded' => 'IINL',
+//        ];
 
         /**
          * @see http://wiki.franklinheath.co.uk/index.php/Enigma/Sample_Messages
@@ -129,13 +129,6 @@ class EnigmaTest extends TestCase
     {
         $this->expectExceptionMessage('Translate must contains same char count');
         new Enigma('ABC', '1234');
-    }
-
-    public function testRotorPosition()
-    {
-        $enigma = new Enigma('ABC');
-        $this->expectExceptionMessage('Invalid rotor position -1');
-        $enigma->setRotor(new I(), 0, -1);
     }
 
     public function testGetCharIndexInvalidChar()
