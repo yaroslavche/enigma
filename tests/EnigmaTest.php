@@ -76,6 +76,8 @@ class EnigmaTest extends TestCase
             'reflector' => $B,
             'plugboard' => [],
             'start' => ['A', 'A', 'A'],
+//            'encoded' => 'SAGE',
+//            'decoded' => 'FLYN',
             'encoded' => 'TESTMESSAGE',
             'decoded' => 'OLPFHNVFLYN',
         ];

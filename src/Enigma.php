@@ -24,7 +24,7 @@ class Enigma
     private $reflector;
     /** @var array<int, int> $plugboard */
     private $plugboard = [];
-    /** @var array<int, array<string, string|bool|int>> $state maybe need class */
+    /** @var array<mixed, mixed> $state maybe need class */
     private $state = [];
 
     /**
