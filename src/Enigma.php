@@ -193,7 +193,6 @@ class Enigma
      */
     public function getRotor(int $slot): RotorInterface
     {
-        /** @var RotorInterface $rotor */
         return $this->rotors[$slot];
     }
 }

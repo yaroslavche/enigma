@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Yaroslavche\Enigma\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yaroslavche\Enigma\Enigma;
-use Yaroslavche\Enigma\Reflector\A;
 use Yaroslavche\Enigma\Reflector\B;
 use Yaroslavche\Enigma\Reflector\ReflectorInterface;
 use Yaroslavche\Enigma\Rotor\I;
@@ -14,6 +14,10 @@ use Yaroslavche\Enigma\Rotor\IV;
 use Yaroslavche\Enigma\Rotor\RotorInterface;
 use Yaroslavche\Enigma\Rotor\V;
 
+/**
+ * Class EnigmaTest
+ * @package Yaroslavche\Enigma\Tests
+ */
 class EnigmaTest extends TestCase
 {
     /**
@@ -55,6 +59,7 @@ class EnigmaTest extends TestCase
         $enigma->setKey($key);
         $this->assertSame($decoded, $enigma->cryptMessage($encoded));
 
+        # need to fix
 //        $enigma->setKey($key);
 //        $this->assertSame($encoded, $enigma->cryptMessage($decoded));
     }
@@ -67,7 +72,6 @@ class EnigmaTest extends TestCase
         $IV = new IV();
         $V = new V();
 
-        $A = new A();
         $B = new B();
 
         yield [
@@ -148,5 +152,15 @@ class EnigmaTest extends TestCase
         $enigma->setPlugPair('A', 'B');
         $this->expectExceptionMessage('Plugboard component "B" already in use.');
         $enigma->setPlugPair('C', 'B');
+    }
+
+    public function testSetGetRotor()
+    {
+        $enigma = new Enigma('ABC');
+        $enigma->setRotor(new I(), 1);
+        $rotor = $enigma->getRotor(1);
+        $this->assertInstanceOf(RotorInterface::class, $rotor);
+        $this->expectExceptionMessage('Invalid rotor position -1');
+        $enigma->setRotor(new II(), -1);
     }
 }

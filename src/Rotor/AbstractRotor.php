@@ -113,10 +113,11 @@ class AbstractRotor implements RotorInterface
     {
         $inputIndex += $this->state->getCurrentIndex() + $this->state->getStartIndex();
         $inputIndex %= $this->mapLength;
-        $outputIndex = array_search($inputIndex, $this->map, true) - $this->state->getCurrentIndex() + ($this->state->isRotated() ? 1 : 0);
+        $outputIndex = array_search($inputIndex, $this->map, true);
         if ($outputIndex === false) {
             throw new Exception('Invalid input index.');
         }
+        $outputIndex = $outputIndex - $this->state->getCurrentIndex() + ($this->state->isRotated() ? 1 : 0);
         if ($this->slot === 0) {
             $outputIndex -= $this->state->getStartIndex() + 1;
         }
