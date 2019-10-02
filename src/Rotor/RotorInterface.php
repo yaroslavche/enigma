@@ -30,7 +30,7 @@ interface RotorInterface
     /**
      * @return bool
      */
-    public function isInTurnoverPosition(): bool;
+    public function isTurnover(): bool;
 
     /**
      * @param int $inputIndex
@@ -45,7 +45,7 @@ interface RotorInterface
     public function wireReverse(int $inputIndex): int;
 
     /**
-     * @param int $index
+     * @return RotorState
      */
-    public function setStartIndex(int $index): void;
+    public function getState(): RotorState;
 }

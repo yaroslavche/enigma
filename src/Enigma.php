@@ -24,8 +24,6 @@ class Enigma
     private $reflector;
     /** @var array<int, int> $plugboard */
     private $plugboard = [];
-    /** @var array<mixed, mixed> $state maybe need class */
-    private $state = [];
 
     /**
      * Enigma constructor.
@@ -57,7 +55,6 @@ class Enigma
         }
         $rotor->set($this, $slot, $ringIndex, $startIndex);
         $this->rotors[$slot] = $rotor;
-        $this->state['rotor'][$slot] = new RotorState();
         ksort($this->rotors);
     }
 
@@ -102,14 +99,11 @@ class Enigma
     {
         $rotate = true;
         /** @var RotorInterface $rotor */
-        foreach ($this->rotors as $slot => $rotor) {
+        foreach ($this->rotors as $rotor) {
             if ($rotate) {
                 $rotor->rotate();
             }
-            /** @var RotorState $rotorState */
-            $rotorState = $this->state['rotor'][$slot];
-            $rotorState->setRotated($rotate);
-            $rotate = $rotate && $rotor->isInTurnoverPosition();
+            $rotate = $rotate && $rotor->isTurnover();
         }
     }
 
@@ -189,16 +183,17 @@ class Enigma
         foreach (array_reverse(mb_str_split($key)) as $index => $char) {
             /** @var RotorInterface $rotor */
             $rotor = $this->rotors[$index];
-            $rotor->setStartIndex($this->getCharIndex($char));
+            $rotor->getState()->setStartIndex($this->getCharIndex($char));
         }
     }
 
     /**
      * @param int $slot
-     * @return RotorState
+     * @return RotorInterface
      */
-    public function getRotorState(int $slot): RotorState
+    public function getRotor(int $slot): RotorInterface
     {
-        return $this->state['rotor'][$slot];
+        /** @var RotorInterface $rotor */
+        return $this->rotors[$slot];
     }
 }
